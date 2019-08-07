@@ -20,6 +20,7 @@ static NSString *const RCTStorageDirectory = @"RCTAsyncLocalStorage_V1";
 static NSString *const RCTOldStorageDirectory = @"RNCAsyncLocalStorage_V1";
 static NSString *const RCTManifestFileName = @"manifest.json";
 static const NSUInteger RCTInlineValueThreshold = 1024;
+NSString *AppGroupName;
 
 #pragma mark - Static helper functions
 
@@ -84,8 +85,14 @@ static NSString *RCTCreateStorageDirectoryPath(NSString *storageDir) {
 #if TARGET_OS_TV
   storageDirectoryPath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
 #else
-  storageDirectoryPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
+    if (!AppGroupName) {
+          storageDirectoryPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
+    } else {
+        NSURL * pathUrl = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier: AppGroupName];
+        storageDirectoryPath =  pathUrl.path;
+    }
 #endif
+  NSLog(@"PATH storageDirectoryPath %@", storageDirectoryPath);
   storageDirectoryPath = [storageDirectoryPath stringByAppendingPathComponent:storageDir];
   return storageDirectoryPath;
 }
@@ -266,11 +273,22 @@ static void RCTStorageDirectoryMigrationCheck()
 
 - (instancetype)init
 {
-  if (!(self = [super init])) {
-    return nil;
-  }
-  RCTStorageDirectoryMigrationCheck();
+  self = [self initWithGroup:(NSString *) nil];
   return self;
+}
+
+- (instancetype)initWithGroup:(NSString *)group {
+
+    if (!self) {
+      self = [super init];
+    } else {
+        if (group) {
+            AppGroupName = group;
+        }
+    }
+    
+    RCTStorageDirectoryMigrationCheck();
+    return self;
 }
 
 RCT_EXPORT_MODULE()
