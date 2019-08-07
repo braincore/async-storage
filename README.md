@@ -85,6 +85,24 @@ getData = async () => {
 ### Advanced
 See docs for [api and more examples](docs/API.md) or [advanced usages](docs/advanced).
 
+### App Group (IOS ONLY)
+Add this line in your `AppDelegte.m`
+```   
+#import <RNCAsyncStorage/RNCAsyncStorage.h>
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+   ...
+   [[RNCAsyncStorage alloc] initWithGroup: @"your.app.group];
+   ...
+}
+```
+Currently this code only accept one/first app group at initial. For more detail check my code here.
+
+https://github.com/RZulfikri/async-storage/blob/add/app-group/ios/RNCAsyncStorage.h#L43
+https://github.com/RZulfikri/async-storage/blob/add/app-group/ios/RNCAsyncStorage.m#L280
+
+
 ## Writing tests
 
 Using [Jest](https://jestjs.io/) for testing? Make sure to check out [docs on how to integrate it with this module.](./docs/Jest-integration.md)
